@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// A script that rotates a cube 360 degrees and moves it up and down in a loop.
 /// </summary>
-public class CubeRotator : MonoBehaviour
+public class CubeRotatorWithUniTask : MonoBehaviour
 {
     [SerializeField] private Transform _cube;
     [SerializeField] private float _rotationDuration;
@@ -13,7 +13,7 @@ public class CubeRotator : MonoBehaviour
 
     private void Awake()
     {
-        RotateCube(destroyCancellationToken)
+        RotateCubeLoop(destroyCancellationToken)
             .SuppressCancellationThrow()
             .Forget();
 
@@ -22,12 +22,14 @@ public class CubeRotator : MonoBehaviour
             .Forget();
     }
 
-    private async UniTask RotateCube(CancellationToken cancellationToken)
+    private async UniTask RotateCubeLoop(CancellationToken cancellationToken)
     {
         while (cancellationToken.IsCancellationRequested == false)
         {
             await Do360Rotation(_rotationDuration, cancellationToken);
         }
+
+        Debug.Log("Rotation cancelled");
     }
 
     private async UniTask Do360Rotation(float duration, CancellationToken cancellationToken)
